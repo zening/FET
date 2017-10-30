@@ -11,7 +11,7 @@ Const sFilePath = "C:\Users\Leo\Documents\GitHub\FET\Sheet"
 Const strDelim = ","
 
 Sub Main()
-CreateTxt_Output
+    CreateTxt_Output
     ExportVisualBasicCode
 End Sub
 
@@ -49,6 +49,7 @@ For Each ws In ActiveWorkbook.Worksheets
             End If
     End If
     Close lFnum
+    Debug.Print "Exported " & sFilePath & lngCnt & ".csv"
 Next ws
 'MsgBox "Done!", vbOKOnly
 End Sub
@@ -108,5 +109,6 @@ Public Sub ExportVisualBasicCode()
     'Application.StatusBar = "Successfully exported " & CStr(count) & " VBA files to " & directory
     'Application.OnTime Now + TimeSerial(0, 0, 10), "ClearStatusBar"
 End Sub
+
 
 
