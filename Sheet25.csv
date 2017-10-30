@@ -1,0 +1,22 @@
+,,,,Size,PM Skill,Complexity
+='Document Control'!A8,='Document Control'!B8,='Document Control'!C8,='Document Control'!D8,=SUM(V7:X9),=SUM(V7:X9),
+='Document Control'!A9,"=IF('Document Control'!B9="","",0.1)","=IF('Document Control'!C9="","",1)","=IF('Document Control'!D9="","",1000)",,,
+='Document Control'!A10,"=IF('Document Control'!B10="","",0.1)","=IF('Document Control'!C10="","",1)","=IF('Document Control'!D10="","",1000)",,,
+='Document Control'!A11,"=IF('Document Control'!B11="","",0.1)","=IF('Document Control'!C11="","",1)","=IF('Document Control'!D11="","",100)",,,
+='Document Control'!A12,"=IF('Document Control'!B12="","",0.1)","=IF('Document Control'!C12="","",1)","=IF('Document Control'!D12="","",100)",,,
+,,,,,,
+='Document Control'!A14,='Document Control'!B14,='Document Control'!C14,,=SUM(V17:X17),=SUM(V17:X17),
+='Document Control'!A15,,"=IF('Document Control'!C15="Days",0.1,IF('Document Control'!C15="Weeks",10,100))",,,,
+,,,,,,
+='Document Control'!A17,='Document Control'!B17,='Document Control'!C17,='Document Control'!D17,=SUM(V16:X16),=SUM(V16:X16),=SUM(V16:X16)
+='Document Control'!A18,"=IF('Document Control'!B18="","",0.1)","=IF('Document Control'!C18="","",500)","=IF('Document Control'!D18="","",100)",,,
+,,,,,,
+='Document Control'!A20,='Document Control'!B20,='Document Control'!C20,='Document Control'!D20,=SUM(V19:X19),=SUM(V19:X19),=SUM(V19:X19)
+='Document Control'!A21,"=IF('Document Control'!B21="","",0.1)","=IF('Document Control'!C21="","",500)","=IF('Document Control'!D21="","",100)",,,
+,,,,,,
+='Document Control'!A23,='Document Control'!B23,='Document Control'!C23,='Document Control'!D23,=SUM(V25:X25)+SUM(V21:X21),=SUM(V22:X26),=SUM(V22:X25)
+='Document Control'!A24,"=IF('Document Control'!B24="","",0.1)","=IF('Document Control'!C24="","",1)","=IF('Document Control'!D24="","",100)",,,
+='Document Control'!A25,"=IF('Document Control'!B25="","",0)","=IF('Document Control'!C25="","",1000)","=IF('Document Control'!D25="","",1000)",,,
+='Document Control'!A26,"=IF('Document Control'!B26="","",1)","=IF('Document Control'!C26="","",10)","=IF('Document Control'!D26="","",100)",,,
+='Document Control'!A27,"=IF('Document Control'!B27="","",1)","=IF('Document Control'!C27="","",10)","=IF('Document Control'!D27="","",100)",,,
+='Document Control'!A28,"=IF('Document Control'!B28="","",1)","=IF('Document Control'!C28="","",10)","=IF('Document Control'!D28="","",100)",=SUM(Y6:Y25),=SUM(Z6:Z25),=SUM(AA6:AA25)
