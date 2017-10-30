@@ -387,6 +387,7 @@ With Sheets("Quote")
     .Rows(18).Copy
     .Rows(QI).Offset(2).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
     .Range("B" & QSR + 1).Formula = "='Equipment'!B" & SRSup
+    .Range("J" & QSR + 1).Formula = "='Equipment'!C" & SRSup
 End With
 
 With Sheets("Equipment")

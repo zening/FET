@@ -33,7 +33,7 @@ Labour,Frame Labour,,,,,,,,1,='Project Setup Request'!F23+'Project Setup Request
 ,,,,,,,,,,,,
 Expenses,Description,,,,,,,,,,,
 Permits,,,,,,,,,1,=SUM('Document Control'!R12:S12),,
-Travel and misc,,,,,,,,,1,='Frame Services'!AW19+('Frame Services'!AW19*'Frame Summary'!B3),,
+Travel and misc,,,,,,,,,1,=Miscellaneous!E4+'Frame Services'!AW19+('Frame Services'!AW19*'Frame Summary'!B3),,
 ,,,,,,,,,,,,
 Quotation Details,,,,,,,,,,,,
 Quote Valid for:,14 Days,,,,,,,,Subtotal:,"=SUBTOTAL(109,$K$17:K36)",,

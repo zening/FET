@@ -5,7 +5,7 @@
 ,2. Tick the Client Cost Rate & Primary Work Type.,,,,,,,,Each sheet has a specific data type to be entered.,,,,,,,,R1: Standard,,,,,=Rates!H1,,,,,=Rates!N1,,,,,=Rates!T1,,,,
 ,Checkboxes in Columns E to G enable contract options,,,,,,,,,,Locked Cells,,,,,,ZSAM,=Rates!A4,,,,ZSAM,Project Co-Ordinator,,,,ZSAM, - ,Unused.,,,ZSAM,LL_Project_Coordinator,,,
 ,3. Fill the relevant Works Characterisation sections with an X,,,,,,,,,,Editable Cells,,,,,,ZSM,=Rates!A5,,,,ZSM,Implementation Manager,,,,ZSM, - ,Replace rate with,,,ZSM,LL_Implementation_Manager,,,
-,This provides a simple visual guide to project requirements.,,,,,,,,,,Title Row Cells,,,,,,ZPM,=Rates!A6,,,,ZPM,Project Manager,,,,ZPM, - ,another client.,,,ZPM,LL_Project_Manager,,,
+,This provides a simple visual guide to project requirements.,,,,,,,,,,Title Row Cells. Editable in Scope tab,,,,,,ZPM,=Rates!A6,,,,ZPM,Project Manager,,,,ZPM, - ,another client.,,,ZPM,LL_Project_Manager,,,
 ,4. Follow the workflow required below in B.,,,,,,,,,,,,,,,,ZSIM,=Rates!A7,,,,ZSIM, - ,,,,ZSIM, - ,,,,ZSIM, - ,,,
 ,5. Email suggestions to PMO@Framegroup.com.au,,,,,,,,,,,,,,,,ZPMS,=Rates!A8,,,,ZPMS,Snr. Project Manager,,,,ZPMS, - ,MelAir are on Frame,,,ZPMS,LL_Programme_Manager,,,
 ,,,,,,,,,,,,,,,,,ZPD,=Rates!A9,,,,ZPD,Programme Manager,,,,ZPD, - ,Standard Rates.,,,ZPD,LL_Project_Director,,,
