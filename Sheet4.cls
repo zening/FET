@@ -1310,6 +1310,7 @@ CSI = FSI
 TaskRow1 = IRSt + 1
 TaskRow2 = TaskRow1 + 1
 
+Application.DisplayAlerts = False
 With Sheets("Scope")
     .Rows(SRSt).Offset(-1).Select 'Bottom Row of Current Segment
     .Range("A" & SRSt).EntireRow.Insert '[Blank Row]
@@ -1455,6 +1456,7 @@ End If
 Application.CutCopyMode = False
 Application.EnableEvents = True
 Application.ScreenUpdating = True
+Application.DisplayAlerts = True
 
 Call Sheets("Document Control").CB_Itemised_Tasks_Click 'Aligns new segment to current sheet setting
 
