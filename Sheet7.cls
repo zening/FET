@@ -80,6 +80,9 @@ RStRow = Sheets("Frame Services").Range("C1").Value 'Resource Start Row
 REndRow = Sheets("Frame Services").Range("D1").Value 'Resource End Row
 PSSRow = Sheets("Frame Services").Range("E1").Value 'Project Setup Start Row
 
+'Show the formula row
+Sheets("Frame Services").Range("A" & RStRow).EntireRow.Hidden = False
+     
 'Loop 1 = Add New Resources, Loop 2 = Remove Unnecessary Resources
 For X = 4 To TEndRow 'Task List Scanner
     StrRes = Sheets("Frame Services").Range("F" & X).Value
@@ -111,6 +114,7 @@ For X = 4 To TEndRow 'Task List Scanner
                    .Range("A" & PSSRow).Offset(1).EntireRow.Insert
                    .Range("A" & PSSRow).EntireRow.Copy
                    .Range("A" & PSSRow).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+                   .Range("A" & PSSRow).Offset(1).EntireRow.Hidden = False
                End With
                Exit For
                End If
@@ -118,15 +122,20 @@ For X = 4 To TEndRow 'Task List Scanner
 Next X
 
 For r = RStRow To REndRow
+    PSR = Sheets("Frame Services").Range("L" & r).Value
     If r > REndRow Then Sheets("Frame Services").Range("L" & RStRow).Formula = Sheets("Frame Services").Range("E1").Value _
                         : Sheets("Frame Services").Range("B" & RStRow) = "Project Staff" _
                         : Exit For
-        If RStRow = REndRow Then Exit For
-        Sheets("Frame Services").Range("B" & r).Select
-            StrResList = Sheets("Frame Services").Range("B" & r).Value
+    If RStRow = REndRow Then Sheets("Frame Services").Range("A" & RStRow).EntireRow.Hidden = True _
+                        : Sheets("Project Setup Request").Range("A" & PSR).EntireRow.Hidden = True _
+                        : Exit For
+    Sheets("Frame Services").Range("B" & r).Select
+    StrResList = Sheets("Frame Services").Range("B" & r).Value
     t = Sheets("Frame Services").Range("F" & r).Value
-    PSR = Sheets("Frame Services").Range("L" & r).Value
-    If t = 0 Then Sheets("Frame Services").Range("A" & r).EntireRow.Delete: Sheets("Project Setup Request").Range("A" & PSR).EntireRow.Delete
+    
+    'Hide the formula row and show the row if t > 0
+    If t = 0 Then Sheets("Frame Services").Range("A" & r).EntireRow.Hidden = True: Sheets("Project Setup Request").Range("A" & PSR).EntireRow.Hidden = True
+    If t > 0 Then Sheets("Frame Services").Range("A" & r).EntireRow.Hidden = False: Sheets("Project Setup Request").Range("A" & PSR).EntireRow.Hidden = False
     REndRow = Sheets("Frame Services").Range("D1").Value
 Next r
 
@@ -139,15 +148,30 @@ Application.ScreenUpdating = False
 Worksheets("Frame Services").Unprotect
 Worksheets("Frame Services").Columns("N:AW").EntireColumn.Hidden = True
 Worksheets("Frame Services").Protect
+CB_TAHide.Visible = False
+CB_TAShow.Caption = "Show Travel"
 Application.ScreenUpdating = True
 End Sub
 
 Private Sub CB_TAShow_Click()
 Application.ScreenUpdating = False
 Worksheets("Frame Services").Unprotect
-Worksheets("Frame Services").Columns("N:AW").EntireColumn.Hidden = False
+'If CB_Expend_BOE.Caption = "+" Then
+If (CB_TAShow.Caption = "Show Travel") Then
+    Worksheets("Frame Services").Columns("N:AW").EntireColumn.Hidden = False
+    CB_TAShow.Caption = "Hide Travel"
+    CB_TAHide.Visible = True
+Else
+    Worksheets("Frame Services").Columns("N:AW").EntireColumn.Hidden = True
+    CB_TAHide.Visible = False
+    CB_TAShow.Caption = "Show Travel"
+End If
+
 Worksheets("Frame Services").Protect
 Application.ScreenUpdating = True
 End Sub
 
 
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub

@@ -27,4 +27,25 @@ ActiveSheet.Protect
 Application.ScreenUpdating = True
 End Sub
 
+Private Sub Worksheet_Activate()
 
+Me.Unprotect
+Application.ScreenUpdating = False
+    Dim Col As Range
+    Dim minWidth As Long
+    For Each Col In Columns("A:AG")
+    If Col.Hidden = False Then
+    minWidth = Col.ColumnWidth
+
+    Col.EntireColumn.AutoFit
+    newWidth = Col.ColumnWidth
+    If minWidth > newWidth Then
+        Col.ColumnWidth = minWidth
+    End If
+    End If
+Next Col
+
+Application.ScreenUpdating = True
+'Me.Protect
+
+End Sub

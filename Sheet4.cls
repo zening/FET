@@ -7,6 +7,137 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
+Private Sub CB_Expend_BOE_Click()
+Me.Unprotect
+Application.ScreenUpdating = False
+Dim DES As Integer
+Dim DErows As Integer
+Dim BES As Integer
+Dim BEE As Integer
+
+Dim i As Integer
+DES = Range("G3").Value + 1
+DErows = Range("N" & DES + 1).Value
+BES = Range("G3").Value + 1 + DErows + 3 'BOE block start here
+BEE = BES + Range("N" & BES + 1).Value + 1
+
+Rows(BEE & ":" & BEE + 4).EntireRow.Insert
+Range("A" & BEE - 1).EntireRow.Copy
+For i = 0 To 4
+Range("A" & BEE + i).EntireRow.PasteSpecial xlPasteAllUsingSourceTheme
+Range("B" & BEE + i).Value = ""
+Next i
+
+Range("N" & BES + 1).Value = Range("N" & BES + 1).Value + 5
+Range("B" & BEE).Select
+CB_Shrink_BOE.Enabled = True
+Application.ScreenUpdating = True
+Me.Protect
+End Sub
+
+Private Sub CB_Expend_Del_Click()
+Me.Unprotect
+Application.ScreenUpdating = False
+Dim DES As Integer
+Dim DEE As Integer
+
+Dim i As Integer
+DES = Range("G3").Value + 1
+DEE = DES + Range("N" & DES + 1).Value + 1
+
+Rows(DEE & ":" & DEE + 4).EntireRow.Insert
+Range("A" & DEE - 1).EntireRow.Copy
+For i = 0 To 4
+Range("A" & DEE + i).EntireRow.PasteSpecial xlPasteAllUsingSourceTheme
+Range("B" & DEE + i).Value = ""
+Next i
+
+Range("N" & DES + 1).Value = Range("N" & DES + 1).Value + 5
+Range("B" & DEE).Select
+CB_Shrink_Del.Enabled = True
+Application.ScreenUpdating = True
+Me.Protect
+
+End Sub
+
+Private Sub CB_Expend_GB_Click()
+Application.ScreenUpdating = False
+If CB_Expend_GB.Caption = "+" Then
+With Sheets("Scope")
+    .Unprotect
+    .Rows((Sheets("Scope").Range("A3").Value + 6) & ":" & Sheets("Scope").Range("A3").Value + 13).Hidden = False
+    .Protect
+End With
+CB_Expend_GB.Caption = "-"
+Else
+With Sheets("Scope")
+    .Unprotect
+    .Rows((Sheets("Scope").Range("A3").Value + 6) & ":" & Sheets("Scope").Range("A3").Value + 13).Hidden = True
+    .Protect
+End With
+CB_Expend_GB.Caption = "+"
+End If
+
+Application.ScreenUpdating = True
+End Sub
+
+Private Sub CB_Shrink_BOE_Click()
+Me.Unprotect
+
+Dim DES As Integer
+Dim DErows As Integer
+Dim BES As Integer
+Dim BEE As Integer
+
+Dim i As Integer
+DES = Range("G3").Value + 1
+DErows = Range("N" & DES + 1).Value
+BES = Range("G3").Value + 1 + DErows + 3 'BOE block start here
+BEE = Range("N" & BES + 1).Value
+
+Rows(BES + BEE).EntireRow.Delete
+Range("N" & BES + 1).Value = Range("N" & BES + 1).Value - 1
+Range("B" & BES + BEE - 1).Select
+
+If Range("N" & BES + 1).Value < 6 Then
+    CB_Shrink_BOE.Enabled = False
+End If
+Me.Protect
+End Sub
+
+Private Sub CB_Shrink_Del_Click()
+Me.Unprotect
+
+Dim DES As Integer
+Dim DEE As Integer
+
+Dim i As Integer
+DES = Range("G3").Value + 1
+DEE = Range("N" & DES + 1).Value
+Rows(DES + DEE).EntireRow.Delete
+Range("N" & DES + 1).Value = Range("N" & DES + 1).Value - 1
+Range("B" & DES + DEE - 1).Select
+
+If Range("N" & DES + 1).Value < 6 Then
+    CB_Shrink_Del.Enabled = False
+End If
+Me.Protect
+
+End Sub
+
+Private Sub CB_Shrink_GB_Click()
+Dim GBE As Integer
+Dim i As Integer
+GBE = Range("N6").Value
+Rows(GBE - 1).EntireRow.Delete
+Range("N6") = GBE - 1
+Range("B" & GBE - 2).Select
+
+If Range("N6").Value < 13 Then
+    CB_Shrink_GB.Enabled = False
+End If
+End Sub
+
 'Subcontractor Change Tracker
 Private Sub Worksheet_Change(ByVal Target As Range)
     If Not Intersect(Target, Range("A" & Range("A4").Value, "C" & Range("A4").Value)) Is Nothing Then
@@ -117,6 +248,8 @@ With ActiveCell
 End With
 
 ItemRow = ActiveCell.Row + 1
+
+Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
 
 'If in Frame Scope - Add Scope line to Frame Services
 If ActiveCell.Row > Range("B3").Value And ActiveCell.Row < Range("D3").Value Then
@@ -251,7 +384,7 @@ If ActiveCell.Row > Range("A4").Value And ActiveCell.Row < Range("B4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -308,7 +441,7 @@ If ActiveCell.Row > Range("B4").Value And ActiveCell.Row < Range("C4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -365,7 +498,7 @@ If ActiveCell.Row > Range("C4").Value And ActiveCell.Row < Range("D4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -422,7 +555,7 @@ If ActiveCell.Row > Range("D4").Value And ActiveCell.Row < Range("E4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -479,7 +612,7 @@ If ActiveCell.Row > Range("E4").Value And ActiveCell.Row < Range("F4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -536,7 +669,7 @@ If ActiveCell.Row > Range("F4").Value And ActiveCell.Row < Range("G4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -593,7 +726,7 @@ If ActiveCell.Row > Range("G4").Value And ActiveCell.Row < Range("H4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -650,7 +783,7 @@ If ActiveCell.Row > Range("H4").Value And ActiveCell.Row < Range("I4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -707,7 +840,7 @@ If ActiveCell.Row > Range("I4").Value And ActiveCell.Row < Range("J4").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -764,7 +897,7 @@ If ActiveCell.Row > Range("J4").Value And ActiveCell.Row < Range("F3").Value The
         .Range("AB" & FSV) = 0.15
         .Range("AD" & FSV & ":" & "AE" & FSV) = 0
         .Range("AG" & FSV) = 0.15
-        .Range("AJ" & FSV) = 0.2
+        .Range("AJ" & FSV) = 0
         .Range("AL" & FSV) = 0
         '.Protect
     End With
@@ -795,6 +928,8 @@ If ActiveCell.Row > Range("J4").Value And ActiveCell.Row < Range("F3").Value The
     Sheets("Scope").Range("O" & ActiveCell.Row).Formula = "=Row('" & Subc & "'!A" & FSV & ")"
     Sheets("Scope").Range("P" & ActiveCell.Row).Formula = "=Row('Frame Summary'!A" & FSR & ")"
 End If
+
+Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
 
 Sheets("Scope").Protect
 Application.CutCopyMode = False
@@ -867,6 +1002,8 @@ FSS = Range("O" & ActiveCell.Row).Value 'Determines Task Start Row
 FSE = Range("O" & ActiveCell.Row).Offset(1).Value - 1 'Determines Task End Row
 FSR = Range("P" & ActiveCell.Row).Value
 FSV = Range("O" & ActiveCell.Row).Offset(-1).Value
+
+Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
 
 'If in Frame Scope:
 If ActiveCell.Row > Range("B3").Value And ActiveCell.Row < Range("D3").Value Then
@@ -1124,6 +1261,8 @@ If ActiveCell.Row > Range("J4").Value And ActiveCell.Row < Range("F3").Value The
     End With
 End If
 
+Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
+
 With Sheets("Scope")
     .Unprotect
     .Rows(ItemRow).Delete
@@ -1193,6 +1332,8 @@ With Sheets("Scope")
 End With
 
 'Insert to Services
+Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
+
 With Sheets("Frame Services")
     .Activate
     .Unprotect
@@ -1274,7 +1415,8 @@ With Sheets("Client Summary")
     .Unprotect
     .Range("A" & CSI).EntireRow.Insert
     .Range("A" & CSI).EntireRow.Insert
-    .Range("A" & CSI).Offset(-2).EntireRow.Copy
+    '.Range("A" & CSI).Offset(-2).EntireRow.Copy
+    .Range("A" & CSI).Offset(2).EntireRow.Copy   'copy Project Close formula
     .Range("A" & CSI).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
     .Range("A" & CSI).Offset(-1).EntireRow.Copy
     .Range("A" & CSI).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
@@ -1285,11 +1427,16 @@ End With
 With Sheets("Amortised Summary")
     .Range("A" & CSI).EntireRow.Insert
     .Range("A" & CSI).EntireRow.Insert
-    .Range("A" & CSI).Offset(-2).EntireRow.Copy
+    '.Range("A" & CSI).Offset(-2).EntireRow.Copy
+    .Range("A" & CSI).Offset(2).EntireRow.Copy   'copy Project Close row
     .Range("A" & CSI).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    .Range("G" & CSI).Formula = "=C" & CSI
+    .Range("H" & CSI, "AD" & CSI).Value = 0
     .Range("A" & CSI).Offset(-1).EntireRow.Copy
     .Range("A" & CSI).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
 End With
+
+Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
 
 With Sheets("Scope")
     .Activate
@@ -1350,6 +1497,8 @@ Next X
 CSR = FSR - 1
 PFR = Sheets("Frame Services").Range("D" & PSR).Value
 
+Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
+
 With Sheets("Amortised Summary")
     .Range("A" & CSR & ":A" & (CSR + SREn - SRSt - 1)).EntireRow.Delete 'Segment Start -> Last Task (Next Segment -1)
 End With
@@ -1380,6 +1529,8 @@ With Sheets("Frame Services")
     .Protect
     .Range("A5").Select
 End With
+
+Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
 
 With Sheets("Scope")
     .Activate

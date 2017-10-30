@@ -71,22 +71,59 @@ FSRE = Sheets(10).Range("D2").Value
 CSR = FSR - 1
 CSRE = FSRE - 1
 
+Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
+
 If CB_EnableS = True And Sheets("Document Control").CB_Itemised_Tasks = False Then _
-                           : Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
-                           : Sheets("Frame Summary").Rows(FSR).EntireRow.Hidden = False _
-                           : Sheets("Client Summary").Rows(CSR).EntireRow.Hidden = False _
-                           : Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Frame Summary").Rows(FSR).EntireRow.Hidden = False _
+                        : Sheets("Client Summary").Rows(CSR).EntireRow.Hidden = False _
+                        : Sheets("Amortised Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = False
                            
 If CB_EnableS = True And Sheets("Document Control").CB_Itemised_Tasks = True Then _
-                           : Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
-                           : Sheets("Frame Summary").Rows(FSR & ":" & FSRE).EntireRow.Hidden = False _
-                           : Sheets("Client Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = False _
-                           : Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Frame Summary").Rows(FSR & ":" & FSRE).EntireRow.Hidden = False _
+                        : Sheets("Client Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = False _
+                        : Sheets("Amortised Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = False
                            
-If CB_EnableS = False Then Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
-                           : Sheets("Frame Summary").Rows(FSR & ":" & FSRE).EntireRow.Hidden = True _
-                           : Sheets("Client Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = True _
-                           : Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
- 
+If CB_EnableS = False Then Sheets("Frame Summary").Rows(FSR & ":" & FSRE).EntireRow.Hidden = True _
+                        : Sheets("Client Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = True _
+                        : Sheets("Amortised Summary").Rows(CSR & ":" & CSRE).EntireRow.Hidden = True
+                        
+Dim i As Integer
+Dim color As Integer
+    If CB_EnableS Then
+        color = 0
+    Else
+        color = 3
+    End If
+    
+    For i = FSR To FSRE
+        Sheets("Frame Summary").Range("A" & i).Interior.ColorIndex = color
+    Next i
+    For i = CSR To CSRE
+        Sheets("Client Summary").Range("A" & i).Interior.ColorIndex = color
+    Next i
+                        
+Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
 Application.ScreenUpdating = True
+End Sub
+
+Private Sub Worksheet_Change(ByVal Target As Range)
+
+Me.Unprotect
+Application.ScreenUpdating = False
+    Dim Col As Range
+    Dim minWidth As Long
+    For Each Col In Columns("A:AQ")
+    If Col.Hidden = False Then
+    minWidth = Col.ColumnWidth
+
+    Col.EntireColumn.AutoFit
+    newWidth = Col.ColumnWidth
+    If minWidth > newWidth Then
+        Col.ColumnWidth = minWidth
+    End If
+    End If
+    Next Col
+
+Application.ScreenUpdating = True
+'Me.Protect
 End Sub

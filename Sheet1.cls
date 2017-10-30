@@ -143,6 +143,24 @@ ActiveSheet.Unprotect
 
 If MsgBox("Were changes made to this document?", vbYesNo, "Change Log") = vbYes Then
 LastRow = Sheets("Document Control").Cells(Rows.count, 9).End(xlUp).Row + 1
+    If LastRow > 26 Then
+        'move first line
+        Me.Range("I19", "O19").Copy
+        Me.Range("I18", "O18").PasteSpecial xlPasteAllUsingSourceTheme
+        Me.Range("P19").Copy
+        Me.Range("P18").PasteSpecial xlPasteValues
+        Me.Range("Q19", "V19").Copy
+        Me.Range("Q18", "V18").PasteSpecial xlPasteAllUsingSourceTheme
+        'move the rest
+        For i = 20 To 27
+            Me.Range("I" & i, "V" & i).Copy
+            Me.Range("I" & i - 1, "V" & i - 1).PasteSpecial xlPasteAllUsingSourceTheme
+        Next
+    LastRow = 26
+    End If
+    Me.Range("B1").Select
+    
+    
     'Maps File Path to Name - saving in the origin folder
     NewFile = (Worksheets("Document Control").Range("B1") & " - " & Worksheets("Document Control").Range("F2") & " - " & Format(Now(), "yyyymmdd") & " " & Format(Now(), "hhmmss") & ".xlsm")
     LongName = ThisWorkbook.path & "\" & NewFile
@@ -183,6 +201,7 @@ If CB_Project.Value = True Or CB_EQONLY.Value = True Then MsgBox ("Work type may
 If CB_Consulting.Value = True Then Application.ScreenUpdating = False _
                                  : Sheets("Scope").Visible = xlSheetVisible _
                                  : Sheets("Client Summary").Visible = xlSheetVisible _
+                                 : CB_CS.Value = True _
                                  : Sheets("Frame Summary").Visible = xlSheetVisible _
                                  : Sheets("Rates").Visible = xlSheetVisible _
                                  : Sheets("Frame Services").Visible = xlSheetVisible _
@@ -196,6 +215,7 @@ If CB_Consulting.Value = True Then Application.ScreenUpdating = False _
 
 If CB_Consulting.Value = False Then Sheets("Scope").Visible = xlSheetHidden _
                                  : Sheets("Client Summary").Visible = xlSheetHidden _
+                                 : CB_CS.Value = False _
                                  : Sheets("Frame Summary").Visible = xlSheetHidden _
                                  : Sheets("Scope").Visible = xlSheetHidden _
                                  : Sheets("Frame Services").Visible = xlSheetHidden _
@@ -204,11 +224,13 @@ Application.ScreenUpdating = True
 End Sub
 
 Private Sub CB_Project_Click()
+Application.ScreenUpdating = False
 If CB_Consulting.Value = True Or CB_EQONLY.Value = True Then MsgBox ("Work type may only be changed on fresh workbooks - Exiting Routine"): CB_Project.Value = False: Exit Sub
 
 If CB_Project.Value = True Then Application.ScreenUpdating = False _
                                  : Sheets("Scope").Visible = xlSheetVisible _
                                  : Sheets("Client Summary").Visible = xlSheetVisible _
+                                 : CB_CS.Value = True _
                                  : Sheets("Frame Summary").Visible = xlSheetVisible _
                                  : Sheets("Rates").Visible = xlSheetVisible _
                                  : Sheets("Frame Services").Visible = xlSheetVisible _
@@ -222,6 +244,7 @@ If CB_Project.Value = True Then Application.ScreenUpdating = False _
 
 If CB_Project.Value = False Then Sheets("Scope").Visible = xlSheetHidden _
                                  : Sheets("Client Summary").Visible = xlSheetHidden _
+                                 : CB_CS.Value = False _
                                  : Sheets("Frame Summary").Visible = xlSheetHidden _
                                  : Sheets("Scope").Visible = xlSheetHidden _
                                  : Sheets("Frame Services").Visible = xlSheetHidden _
@@ -413,10 +436,14 @@ Private Sub CB_Amortised_Click()
 Application.ScreenUpdating = False
 
 Dim InputData As Variant
-InputData = MsgBox("This is a Sales feature - Requires BDM Approval: Continue?", vbYesNo, "Change Log")
-
-If InputData = vbYes Then Sheets("Amortised Summary").Visible = xlSheetVisible: CB_Amortised = True
-If InputData = vbNo Then Sheets("Amortised Summary").Visible = xlSheetHidden: CB_Amortised = False
+If CB_Amortised = True Then
+    'InputData = MsgBox("This is a Sales feature - Requires BDM Approval: Continue?", vbYesNo, "Change Log")
+    'If InputData = vbYes Then Sheets("Amortised Summary").Visible = xlSheetVisible: CB_Amortised = True
+    'If InputData = vbNo Then Sheets("Amortised Summary").Visible = xlSheetHidden: CB_Amortised = False
+    Sheets("Amortised Summary").Visible = xlSheetVisible
+Else
+    Sheets("Amortised Summary").Visible = xlSheetHidden
+End If
 
 Application.ScreenUpdating = True
 End Sub
@@ -436,13 +463,13 @@ If CB_BG.Value = True Then Sheets("Client Summary").Unprotect _
                           : Sheets("Client Summary").Protect _
                           : Sheets("Frame Summary").Unprotect _
                           : Sheets("Frame Summary").Rows(FBGS & ":" & FBGE).Hidden = False _
-                          : Sheets("Frame Summary").Range("E" & FBGS).Value = "Yes" _
+                          : Sheets("Frame Summary").Range("J" & FBGS).Value = "Yes" _
                           : Sheets("Frame Summary").Protect
 If CB_BG.Value = False Then Sheets("Client Summary").Unprotect _
                           : Sheets("Client Summary").Rows(CBGS & ":" & CBGE).EntireRow.Hidden = True _
                           : Sheets("Client Summary").Protect _
                           : Sheets("Frame Summary").Unprotect _
-                          : Sheets("Frame Summary").Range("E" & FBGS).Value = "No" _
+                          : Sheets("Frame Summary").Range("J" & FBGS).Value = "No" _
                           : Sheets("Frame Summary").Rows(FBGS & ":" & FBGE).Hidden = True _
                           : Sheets("Frame Summary").Protect
 Application.ScreenUpdating = True
@@ -474,14 +501,14 @@ If CB_Equipment.Value = True Then Sheets("Equipment").Visible = xlSheetVisible _
                                 : Sheets("Frame Summary").Rows(FSEFRow & ":" & FSELRow).EntireRow.Hidden = False _
                                 : Sheets("Client Summary").Rows(CSEFRow & ":" & CSELRow).EntireRow.Hidden = False _
                                 : Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect _
-                                : Sheets("Quote").Range("A17").Value = "=Equipment!A6" _
+                                : Sheets("Quote").Range("A17").Value = "='Frame Summary'!A41" _
                                 : Sheets("Quote").Range("B17").Value = "=Equipment!B6" _
                                 : Sheets("Quote").Range("H17").Value = "" _
                                 : Sheets("Quote").Range("I17").Value = "" _
-                                : Sheets("Quote").Range("A18").Value = "=Equipment!A7" _
+                                : Sheets("Quote").Range("A18").Value = "='Frame Summary'!A42" _
                                 : Sheets("Quote").Range("B18").Value = "=Equipment!B7" _
-                                : Sheets("Quote").Range("J18").Value = "=Equipment!C7" _
-                                : Sheets("Quote").Range("K18").Value = "=Equipment!L7"
+                                : Sheets("Quote").Range("J18").Value = 1 _
+                                : Sheets("Quote").Range("K18").Value = "='Frame Summary'!L42"
 If CB_Equipment.Value = False Then Sheets("Equipment").Visible = xlSheetHidden _
                                  : Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
                                  : Sheets("Frame Summary").Rows(FSEFRow & ":" & FSELRow).EntireRow.Hidden = True _
@@ -576,6 +603,22 @@ If Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value).Hidden = False Then S
 If Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value).Hidden = True Then Sheets("Frame Summary").Rows(Sheets("Frame Summary").Range("E2").Value).Hidden = True
 If Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value).Hidden = True Then Sheets("Client Summary").Rows(Sheets("Frame Summary").Range("D3") & ":" & Sheets("Frame Summary").Range("E2")).Offset(-1).Hidden = True
 
+'hide disabled subcontractor
+
+    Dim i As Integer
+    
+    For i = FSS To FSbcE
+    If Sheets("Frame Summary").Range("A" & i).Interior.ColorIndex = 3 Then
+        Sheets("Frame Summary").Range("A" & i).EntireRow.Hidden = True
+    End If
+    Next i
+    
+    For i = CSS To CSbcE
+    If Sheets("Client Summary").Range("A" & i).Interior.ColorIndex = 3 Then
+        Sheets("Client Summary").Range("A" & i).EntireRow.Hidden = True
+    End If
+    Next i
+    
 Sheets("Frame Summary").Rows(Sheets("Frame Summary").Range("D3").Value).Hidden = False 'Reveals Row Separator
 Sheets("Scope").Protect
 Sheets("Frame Summary").Protect
@@ -652,28 +695,31 @@ If CB_Third_Parties.Value = False Then Sheets(9).Visible = xlSheetHidden: Sheets
                         : Sheets(13).Visible = xlSheetHidden: Sheets(14).Visible = xlSheetHidden _
                         : Sheets(15).Visible = xlSheetHidden: Sheets(16).Visible = xlSheetHidden _
                         : Sheets(17).Visible = xlSheetHidden: Sheets(18).Visible = xlSheetHidden _
-                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
+                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect _
                         : Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value & ":" & (Sheets("Scope").Range("F3").Value)).EntireRow.Hidden = True _
                         : Sheets("Frame Summary").Rows(FRow & ":" & lRow).EntireRow.Hidden = True _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & CSLRow).EntireRow.Hidden = True _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Exit Sub
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & CSLRow).EntireRow.Hidden = True _
+                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect: Exit Sub
 
 InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Third Parties", Type:=1)
+
+Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
     If InputData = 1 Then Sheets(9).Visible = xlSheetVisible _
-                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
                         : Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value & ":" & (Sheets("Scope").Range("B4").Value - 1)).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS1Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FRow).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FRow).EntireRow.Hidden = False
+                        
                     
     If InputData = 2 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
-                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
+                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect _
                         : Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value & ":" & (Sheets("Scope").Range("C4").Value - 1)).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS2Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS1Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS1Row + 1).EntireRow.Hidden = False
                         
     If InputData = 3 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible _
@@ -682,7 +728,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS3Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS2Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS2Row + 1).EntireRow.Hidden = False
                         
     If InputData = 4 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -691,7 +737,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS4Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS3Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS3Row + 1).EntireRow.Hidden = False
                         
     If InputData = 5 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -701,7 +747,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS5Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS4Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS4Row + 1).EntireRow.Hidden = False
                         
     If InputData = 6 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -711,7 +757,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS6Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS5Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS5Row + 1).EntireRow.Hidden = False
                         
     If InputData = 7 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -722,7 +768,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS7Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS6Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS6Row + 1).EntireRow.Hidden = False
                         
     If InputData = 8 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -733,7 +779,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS8Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS7Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS7Row + 1).EntireRow.Hidden = False
                         
     If InputData = 9 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -745,7 +791,7 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Frame Summary").Rows(FRow & ":" & FS9Row).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & FS8Row).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & FS8Row + 1).EntireRow.Hidden = False
                         
    If InputData = 10 Then Sheets(9).Visible = xlSheetVisible: Sheets(10).Visible = xlSheetVisible _
                         : Sheets(11).Visible = xlSheetVisible: Sheets(12).Visible = xlSheetVisible _
@@ -756,8 +802,9 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value & ":" & (Sheets("Scope").Range("F3").Value)).EntireRow.Hidden = False _
                         : Sheets("Frame Summary").Rows(FRow & ":" & lRow).EntireRow.Hidden = False _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & CSLRow).EntireRow.Hidden = False _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Amortised Summary").Rows(CSFRow & ":" & CSLRow + 1).EntireRow.Hidden = False
                         
+  Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
     If InputData <= 0 Then Sheets(9).Visible = xlSheetHidden
                         
    If InputData = "" Then Sheets(9).Visible = xlSheetHidden
@@ -767,11 +814,11 @@ InputData = Application.InputBox(Prompt:="Number of Third Parties:", Title:="Thi
                         : Sheets(13).Visible = xlSheetHidden: Sheets(14).Visible = xlSheetHidden _
                         : Sheets(15).Visible = xlSheetHidden: Sheets(16).Visible = xlSheetHidden _
                         : Sheets(17).Visible = xlSheetHidden: Sheets(18).Visible = xlSheetHidden _
-                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _
+                        : Sheets("Scope").Unprotect: Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect:: Sheets("Amortised Summary").Protect _
                         : Sheets("Scope").Rows(Sheets("Scope").Range("E3").Value & ":" & (Sheets("Scope").Range("F3").Value)).EntireRow.Hidden = True _
                         : Sheets("Frame Summary").Rows(FRow & ":" & lRow).EntireRow.Hidden = True _
                         : Sheets("Client Summary").Rows(CSFRow & ":" & CSLRow).EntireRow.Hidden = True _
-                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect
+                        : Sheets("Scope").Protect: Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
 
 If Sheets("Document Control").CB_Itemised_Tasks = False Then Call Sheets("Document Control").CB_Itemised_Tasks_Click
 If Sheets("Document Control").CB_Itemised_Tasks = True Then Call Sheets("Document Control").CB_Itemised_Tasks_Click

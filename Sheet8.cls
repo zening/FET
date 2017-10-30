@@ -27,7 +27,7 @@ Summ1R = SummRow + 1
 ClieRow = SummRow - 1
 AdHocRow = ItemRow + 11
 
-If ActiveCell.Row < 5 Then MsgBox ("Please select Equipment Item Line - Exiting Routine"): Exit Sub
+If ActiveCell.Row < 7 Then MsgBox ("Please select Equipment Item Line - Exiting Routine"): Exit Sub
 If ActiveCell.Row > Range("J1").Value Then MsgBox ("Please select Equipment Item Line - Exiting Routine"): Exit Sub
 
 RVT = Sheets("Equipment").Range("N" & ActiveCell.Row).Value 'Determines if Supplier title, if so then select next line.
@@ -35,6 +35,7 @@ If RVT <> "0" Then ActiveCell.Offset(1).Select
 
 Application.ScreenUpdating = False
 ActiveSheet.Unprotect
+Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect: Sheets("Amortised Summary").Unprotect
 
 With Sheets("Equipment")
     .Range("A" & ItemRow).Offset(1).EntireRow.Insert
@@ -49,28 +50,34 @@ With Sheets("Equipment")
 End With
 
 With Sheets("Frame Summary")
-    .Unprotect
+    '.Unprotect
     .Rows(SummRow).Offset(1).EntireRow.Insert
     .Rows(SummRow).Copy
     .Rows(SummRow).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
-    .Protect
+    '.Protect
 End With
 
 With Sheets("Client Summary")
-    .Unprotect
+    '.Unprotect
     .Rows(ClieRow).Offset(1).EntireRow.Insert
     .Rows(ClieRow).Copy
     .Rows(ClieRow).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
-    .Protect
+    '.Protect
 End With
 
 With Sheets("Amortised Summary")
+    '.Unprotect
     .Rows(ClieRow).Offset(1).EntireRow.Insert
     .Rows(ClieRow).Copy
     .Rows(ClieRow).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    '.Protect
 End With
 
+'use Frame Summary data for Quote sheet
+AdHocRow = SummRow - 24
+
 With Sheets("Quote")
+    .Unprotect
     .Rows(AdHocRow).Offset(1).EntireRow.Insert
     .Rows(AdHocRow).Copy
     .Rows(AdHocRow).Offset(1).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
@@ -85,7 +92,7 @@ With Sheets("Equipment")
     .Range("N" & Range("J1").Value).Formula = "=SUM(N5:N" & Range("J1").Value - 1 & ")"
     .Protect
 End With
-
+Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect: Sheets("Amortised Summary").Protect
 Application.ScreenUpdating = True
 End Sub
 
@@ -108,6 +115,8 @@ SummRow = Range("S" & ActiveCell.Row).Value
 ClieRow = SummRow - 1
 AdHocRow = ItemRow + 11 'Fix later - Static + 11 reference will cause issues.
 
+Application.ScreenUpdating = False
+
 If ActiveCell.Row < 6 Then MsgBox ("This is Not An Equipment Item - Exiting Routine"): Exit Sub
 If ActiveCell.Row > Range("J1").Value Then MsgBox ("This is Not An Equipment Item - Exiting Routine"): Exit Sub
 If Range("C" & ActiveCell.Row).Value = "" Then MsgBox ("Select Equipment Item - Use: Remove Supplier - Exiting Routine"): Exit Sub
@@ -122,7 +131,7 @@ If Range("J1").Value = 9 Then Range("A7") = "[Item/Config Number]" _
                             : Exit Sub
 
 
-Application.ScreenUpdating = False
+
 
 With Sheets("Equipment")
     .Unprotect
@@ -140,7 +149,9 @@ With Sheets("Client Summary")
     .Protect
 End With
 With Sheets("Amortised Summary")
+    .Unprotect
     .Rows(ClieRow).EntireRow.Delete
+    .Protect
 End With
 With Sheets("Quote")
     .Rows(AdHocRow).EntireRow.Delete
@@ -215,7 +226,9 @@ For r = 0 To InputData
     AdHocRow = DR + 11 'Likely to generate issue - Fix later
 
     With Sheets("Amortised Summary")
+        .Unprotect
         .Rows(ClieRow).EntireRow.Delete
+        .Protect
     End With
     With Sheets("Client Summary")
         .Unprotect
@@ -244,6 +257,15 @@ End Sub
 
 Private Sub CB_AddSupplier_Click()
 Application.ScreenUpdating = False
+
+If ActiveCell.Row < 7 Then
+'MsgBox ("Please select Equipment Item Line - Exiting Routine"): Exit Sub
+    Range("A7").Select
+    
+End If
+
+If ActiveCell.Row > Range("J1").Value Then MsgBox ("Please select Equipment Item Line - Exiting Routine"): Exit Sub
+
 If MsgBox("This will insert a new Equipment Supplier below the present one: Continue?", vbYesNo, "Change Log") = vbYes Then
 Dim FSRow As Long
 Dim FSI As Long 'Frame Summary Insert Row
@@ -337,22 +359,34 @@ With Sheets("Client Summary")
 End With
 
 With Sheets("Amortised Summary")
+    .Unprotect
     .Range("A" & CSI).Offset(2).EntireRow.Insert
     .Range("A" & CSI).Offset(2).EntireRow.Insert
-    .Range("A" & CSI).EntireRow.Copy
+    .Range("A" & CSI).Copy
     .Range("A" & CSI).Offset(2).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    .Range("F" & CSI).Copy
+    .Range("F" & CSI).Offset(2).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    .Range("A" & CSI).Offset(2).IndentLevel = 2
+    .Range("A" & CSI).Offset(2).EntireRow.Interior.color = RGB(255, 255, 255)
+    .Range("F" & CSI).Offset(2).IndentLevel = 1
     .Range("A" & CSI).Offset(1).EntireRow.Copy
     .Range("A" & CSI).Offset(3).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    .Protect
 End With
 
+'use Frame Summary data for Quote
+QI = FSI - 24
+QSR = QI + 1
 With Sheets("Quote")
-    .Rows(QI).Offset(1).EntireRow.Insert
+    .Unprotect
     .Rows(QI).Offset(1).EntireRow.Insert
     .Rows(QI).Offset(1).EntireRow.Insert
     .Rows(17).Copy
     .Rows(QSR).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    .Range("B" & QSR).Formula = "='Equipment'!B" & SRSt
     .Rows(18).Copy
     .Rows(QI).Offset(2).PasteSpecial Paste:=xlPasteAllUsingSourceTheme
+    .Range("B" & QSR + 1).Formula = "='Equipment'!B" & SRSup
 End With
 
 With Sheets("Equipment")
@@ -419,7 +453,9 @@ CSRE = FSRE - 1
 QFR = QSR + SREn - SRSt
 
 With Sheets("Amortised Summary")
+    .Unprotect
     .Range("A" & CSRS & ":AK" & CSRE).EntireRow.Delete
+    .Protect
 End With
 
 With Sheets("Client Summary")
@@ -451,3 +487,25 @@ Application.ScreenUpdating = True
 End Sub
 
 
+Private Sub Worksheet_Activate()
+
+Me.Unprotect
+Application.ScreenUpdating = False
+    Dim Col As Range
+    Dim minWidth As Long
+    For Each Col In Columns("A:AG")
+    If Col.Hidden = False Then
+    minWidth = Col.ColumnWidth
+
+    Col.EntireColumn.AutoFit
+    newWidth = Col.ColumnWidth
+    If minWidth > newWidth Then
+        Col.ColumnWidth = minWidth
+    End If
+    End If
+Next Col
+
+Application.ScreenUpdating = True
+'Me.Protect
+
+End Sub
