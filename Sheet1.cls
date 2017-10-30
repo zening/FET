@@ -501,13 +501,13 @@ If CB_Equipment.Value = True Then Sheets("Equipment").Visible = xlSheetVisible _
                                 : Sheets("Frame Summary").Rows(FSEFRow & ":" & FSELRow).EntireRow.Hidden = False _
                                 : Sheets("Client Summary").Rows(CSEFRow & ":" & CSELRow).EntireRow.Hidden = False _
                                 : Sheets("Frame Summary").Protect: Sheets("Client Summary").Protect _
-                                : Sheets("Quote").Range("A17").Value = "='Frame Summary'!A41" _
-                                : Sheets("Quote").Range("B17").Value = "=Equipment!B6" _
+                                : Sheets("Quote").Range("A17").Value = "" _
+                                : Sheets("Quote").Range("B17").Value = "" _
                                 : Sheets("Quote").Range("H17").Value = "" _
                                 : Sheets("Quote").Range("I17").Value = "" _
                                 : Sheets("Quote").Range("A18").Value = "='Frame Summary'!A42" _
                                 : Sheets("Quote").Range("B18").Value = "=Equipment!B7" _
-                                : Sheets("Quote").Range("J18").Value = 1 _
+                                : Sheets("Quote").Range("J18").Value = "=Equipment!C7" _
                                 : Sheets("Quote").Range("K18").Value = "='Frame Summary'!L42"
 If CB_Equipment.Value = False Then Sheets("Equipment").Visible = xlSheetHidden _
                                  : Sheets("Frame Summary").Unprotect: Sheets("Client Summary").Unprotect _

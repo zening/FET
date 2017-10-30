@@ -9,7 +9,7 @@
 ,Frame Estimation Tool V5.xlsm,,,,,,,"=IF(B9="","",I8+1)",Mark Howell,,Bug fixes and enhancements,,,,,
 ,Frame Estimation Tool - MD50000000 - 20170228 163758.xlsm,,,,,,,"=IF(B10="","",I9+0.01)",Mark Howell,,Updated for MD number and Scope heading format,,,,,
 ,Frame Estimation Tool - MD50200000 - 20170314 131612.xlsm,,,,,,,"=IF(B11="","",I10+0.01)",Mark Howell,,Frame logo to Quote,,,,,
-,,,,,,,,"=IF(B12="","",I11+0.01)",,,,,,,,
+,Frame Estimation Tool - MD50300000 - 20170622 101639.xlsm      ,,,,,,,"=IF(B12="","",I11+0.01)",Leo Liu,,Office 365 bug fix,,,,,
 ,,,,,,,,"=IF(B13="","",#REF!+0.01)",,,,,,,,
 ,,,,,,,,"=IF(B14="","",I13+0.01)",,,,,,,,
 ,,,,,,,,"=IF(B15="","",I14+0.01)",,,,,,,,
